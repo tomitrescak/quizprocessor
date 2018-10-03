@@ -7,7 +7,7 @@ import { App } from './client/modules/main/components/app';
 
 // import styles
 // import './client/styles/semantic.min.css';
-import './client/styles/app.css';
+// import './client/styles/app.css';
 
 
 import { setStatefulModules } from 'fuse-box/modules/fuse-hmr'

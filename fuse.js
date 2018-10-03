@@ -17,28 +17,15 @@ const JsxControlsPugin = require('jsx-controls-loader').fuseBoxPlugin;
 // SERVER
 /////////////////////////////////////////////
 
-
-
-
 /////////////////////////////////////////////
 // DEV
 /////////////////////////////////////////////
-
-
 
 function initFuse(isDebug) {
   const defaultFuse = FuseBox.init({
     homeDir: 'src',
     output: 'public/$name.js',
-    plugins: [
-      JsxControlsPugin,
-      WebIndexPlugin({ template: 'src/web.html', target: 'index.html' }),
-      CSSPlugin({
-        group: 'bundle.css',
-        outFile: `public/styles/bundle.css`,
-        inject: false
-      })
-    ],
+    plugins: [JsxControlsPugin, WebIndexPlugin({ template: 'src/web.html', target: 'index.html' })],
     shim: {
       crypto: {
         exports: '{ randomBytes: () => crypto.getRandomValues(new global.Uint16Array(1))[0] }'
@@ -82,12 +69,9 @@ Sparky.task('debug', () => {
   fuse.run();
 });
 
-
-
 /////////////////////////////////////////////
 // PRODUCTION
 /////////////////////////////////////////////
-
 
 const uglify2 = {
   compress: {
@@ -110,47 +94,21 @@ const uglify2 = {
   exclude: /compiler\.js/i
 };
 
-const uglify = {
-  compress: {
-    sequences: true,
-    dead_code: true,
-    properties: true,
-    drop_debugger: true,
-    conditionals: true,
-    booleans: true,
-    loops: true,
-    unused: true,
-    hoist_funs: true,
-    hoist_vars: true,
-    if_return: true,
-    inline: true,
-    join_vars: true,
-    collapse_vars: true
-  }
-};
-
 Sparky.task('production', () => {
   const productionFuse = FuseBox.init({
     homeDir: 'src',
-    output: 'public/$name',
+    output: 'dist/$name',
     hash: true,
     tsConfig: 'tsconfig.json',
     plugins: [
       EnvPlugin({ NODE_ENV: 'production' }),
       WebIndexPlugin({ template: 'src/web.html' }),
-      JsxControlsPugin,
-      JSONPlugin(),
-      // UglifyJSPlugin(),
-      CSSPlugin({
-        inject: false,
-        group: 'bundle.css',
-        outFile: `public/styles/bundle.css`
-      }),
-      // QuantumPlugin()
+      JsxControlsPugin
     ],
     shim: {
       crypto: {
-        exports: '{ randomBytes: function(length) { return crypto.getRandomValues(new global.Uint8Array(length)) }}'
+        exports:
+          '{ randomBytes: function(length) { return crypto.getRandomValues(new global.Uint8Array(length)) }}'
       }
     }
   });
@@ -158,12 +116,12 @@ Sparky.task('production', () => {
   productionFuse
     .bundle('vendor.min.js')
     .target('browser')
-    .instructions(' ~ client/index.ts'); // nothing has changed here
+    .instructions('~ index.tsx'); // nothing has changed here
 
   productionFuse
     .bundle('client.min.js')
     .target('browser')
-    .instructions(' !> [client/index.ts]');
+    .instructions(' !> [index.tsx]');
 
   productionFuse.run();
   // .then(producer => {
@@ -190,5 +148,3 @@ Sparky.task('production', () => {
   //   return initServer(false);
   // });
 });
-
-
